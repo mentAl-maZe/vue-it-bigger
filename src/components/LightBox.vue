@@ -269,6 +269,11 @@ export default {
         autoHeight: true,
         autoZoomOut: false
       })
+    },
+
+    noSwipe: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -281,6 +286,7 @@ export default {
       timer: null,
       interactionTimer: null,
       interfaceHovered: false,
+      hammer: null
     }
   },
 
@@ -338,6 +344,21 @@ export default {
       if (this.select === this.startAt)
         this.$emit('onStartIndex')
     },
+
+    noSwipe: {
+      handler(value) {
+        if (!value) {
+          this.hammer.on('swiperight', this.previousImage)
+          this.hammer.on('swipeleft', this.nextImage)
+
+          return
+        }
+
+        this.hammer.off('swiperight', this.previousImage)
+        this.hammer.off('swipeleft', this.nextImage)
+      },
+      immediate: true
+    }
   },
 
   mounted() {
@@ -348,10 +369,7 @@ export default {
     this.onToggleLightBox(this.lightBoxShown)
 
     if (this.$refs.container) {
-      const hammer = new Hammer(this.$refs.container)
-
-      hammer.on('swiperight', this.previousImage)
-      hammer.on('swipeleft', this.nextImage)
+      this.hammer = new Hammer(this.$refs.container)
 
       this.$refs.container.addEventListener('mousedown', this.handleMouseActivity);
       this.$refs.container.addEventListener('mousemove', this.handleMouseActivity);
