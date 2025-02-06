@@ -20,14 +20,19 @@
             mode="out-in"
             :name="imageTransitionName"
           >
-            <img
+            <PinchZoom
               v-if="currentMedia.type == undefined || currentMedia.type == 'image'"
-              :key="currentMedia.src"
-              :src="currentMedia.src"
-              :srcset="currentMedia.srcset || ''"
-              class="vib-image"
-              :alt="currentMedia.caption"
+              :auto-zoom-out="false"
+              auto-height
             >
+              <img
+                :key="currentMedia.src"
+                :src="currentMedia.src"
+                :srcset="currentMedia.srcset || ''"
+                class="vib-image"
+                :alt="currentMedia.caption"
+              >
+            </PinchZoom>
             <div
               v-else-if="media[select].type == 'youtube'"
               class="video-background"
@@ -160,6 +165,7 @@
 </template>
 
 <script>
+import PinchZoom from 'vue-pinch-zoom'
 import LeftArrowIcon from './LeftArrowIcon'
 import RightArrowIcon from './RightArrowIcon'
 import CloseIcon from './CloseIcon'
@@ -174,6 +180,7 @@ if (typeof window !== 'undefined') {
 
 export default {
   components: {
+    PinchZoom,
     LeftArrowIcon,
     RightArrowIcon,
     CloseIcon,
@@ -467,5 +474,4 @@ export default {
 }
 </script>
 
-<style src="./style.css">
-</style>
+<style src="./style.css"></style>
