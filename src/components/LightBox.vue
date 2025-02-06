@@ -22,8 +22,7 @@
           >
             <PinchZoom
               v-if="currentMedia.type == undefined || currentMedia.type == 'image'"
-              :auto-zoom-out="false"
-              auto-height
+              v-bind="pinchZoom"
             >
               <img
                 :key="currentMedia.src"
@@ -263,6 +262,14 @@ export default {
       type: String,
       default: 'Next',
     },
+
+    pinchZoom: {
+      type: Object,
+      default: () => ({
+        autoHeight: true,
+        autoZoomOut: false
+      })
+    }
   },
 
   data() {
