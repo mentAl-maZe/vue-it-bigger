@@ -20,42 +20,64 @@
             mode="out-in"
             :name="imageTransitionName"
           >
-            <img
-              v-if="currentMedia.type == undefined || currentMedia.type == 'image'"
-              :key="currentMedia.src"
-              :src="currentMedia.src"
-              :srcset="currentMedia.srcset || ''"
-              class="vib-image"
-              :alt="currentMedia.caption"
+            <slot
+              name="content"
+              v-bind="currentMedia"
             >
-            <div
-              v-else-if="media[select].type == 'youtube'"
-              class="video-background"
-            >
-              <iframe
-                :src="'https://www.youtube.com/embed/' + media[select].id + '?showinfo=0'"
-                width="560"
-                height="315"
-                frameborder="0"
-                allowfullscreen
-              />
-            </div>
-            <video
-              v-else-if="currentMedia.type == 'video'"
-              :key="currentMedia.sources[0].src"
-              ref="video"
-              controls
-              :width="currentMedia.width"
-              :height="currentMedia.height"
-              :autoplay="currentMedia.autoplay"
-            >
-              <source
-                v-for="source in currentMedia.sources"
-                :key="source.src"
-                :src="source.src"
-                :type="source.type"
+              <template v-if="currentMedia.type == undefined || currentMedia.type == 'image'">
+                <slot
+                  name="content:image"
+                  v-bind="currentMedia"
+                >
+                  <img
+                    :key="currentMedia.src"
+                    :src="currentMedia.src"
+                    :srcset="currentMedia.srcset || ''"
+                    class="vib-image"
+                    :alt="currentMedia.caption"
+                  >
+                </slot>
+              </template>
+              <div
+                v-else-if="currentMedia.type == 'youtube'"
+                class="video-background"
               >
-            </video>
+                <slot
+                  name="content:youtube"
+                  v-bind="currentMedia"
+                >
+                  <iframe
+                    :src="'https://www.youtube.com/embed/' + currentMedia.id + '?showinfo=0'"
+                    width="560"
+                    height="315"
+                    frameborder="0"
+                    allowfullscreen
+                  />
+                </slot>
+              </div>
+              <template v-else-if="currentMedia.type == 'video'">
+                <slot
+                  name="content:video"
+                  v-bind="currentMedia"
+                >
+                  <video
+                    ref="video"
+                    :key="currentMedia.sources[0].src"
+                    controls
+                    :width="currentMedia.width"
+                    :height="currentMedia.height"
+                    :autoplay="currentMedia.autoplay"
+                  >
+                    <source
+                      v-for="source in currentMedia.sources"
+                      :key="source.src"
+                      :src="source.src"
+                      :type="source.type"
+                    >
+                  </video>
+                </slot>
+              </template>
+            </slot>
           </transition>
         </div> <!-- .vib-content -->
 
@@ -467,5 +489,4 @@ export default {
 }
 </script>
 
-<style src="./style.css">
-</style>
+<style src="./style.css"></style>
