@@ -165,6 +165,7 @@
 
 <script>
 import PinchZoom from 'vue-pinch-zoom'
+
 import LeftArrowIcon from './LeftArrowIcon'
 import RightArrowIcon from './RightArrowIcon'
 import CloseIcon from './CloseIcon'
@@ -286,7 +287,7 @@ export default {
       timer: null,
       interactionTimer: null,
       interfaceHovered: false,
-      hammer: null
+      hammer: null,
     }
   },
 
@@ -346,16 +347,19 @@ export default {
     },
 
     noSwipe: {
-      handler(value) {
-        if (!value) {
-          this.hammer.on('swiperight', this.previousImage)
-          this.hammer.on('swipeleft', this.nextImage)
+      async handler() {
+        const hammer = await this.getHammer()
+
+        if (!this.noSwipe) {
+          hammer.on('swiperight', this.swipeRight)
+
+          hammer.on('swipeleft', this.swipeLeft)
 
           return
         }
 
-        this.hammer.off('swiperight', this.previousImage)
-        this.hammer.off('swipeleft', this.nextImage)
+        hammer.off('swiperight', this.swipeRight)
+        hammer.off('swipeleft', this.swipeLeft)
       },
       immediate: true
     }
@@ -369,8 +373,6 @@ export default {
     this.onToggleLightBox(this.lightBoxShown)
 
     if (this.$refs.container) {
-      this.hammer = new Hammer(this.$refs.container)
-
       this.$refs.container.addEventListener('mousedown', this.handleMouseActivity);
       this.$refs.container.addEventListener('mousemove', this.handleMouseActivity);
       this.$refs.container.addEventListener('touchmove', this.handleMouseActivity);
@@ -392,6 +394,14 @@ export default {
   },
 
   methods: {
+    swipeRight() {
+      console.log('swiperight')
+      this.previousImage()
+    },
+    swipeLeft() {
+      console.log('swipeleft')
+      this.nextImage()
+    },
     onLightBoxOpen() {
       this.$emit('onOpened')
 
@@ -495,6 +505,24 @@ export default {
     stopInteractionTimer() {
       this.interactionTimer = null
     },
+
+    getHammer(tries = 0) {
+      if (this.hammer) return this.hammer
+
+      if (!this.$refs.container) {
+        if (tries >= 100) return null
+
+        return new Promise(resolve => {
+          setTimeout(() => {
+            resolve(this.getHammer(tries++))
+          }, 100)
+        })
+      }
+
+      this.hammer = new Hammer(this.$refs.container)
+
+      return this.hammer
+    }
   },
 }
 </script>
