@@ -1,6 +1,13 @@
 .DS_Store
 *.log
 coverage/
-dist/
 gh-pages/
 node_modules/
+build/
+specs/
+.github/
+.babelrc
+.editorconfig
+.eslintrc.json
+jsconfig.json
+
